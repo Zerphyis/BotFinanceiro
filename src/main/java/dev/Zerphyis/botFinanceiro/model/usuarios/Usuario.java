@@ -1,35 +1,29 @@
-package dev.Zerphyis.botFinanceiro.model.user;
+package dev.Zerphyis.botFinanceiro.model.usuarios;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Usuario")
-public class User {
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Column(name = "nome")
-    private  String name;
+    private String nome;
 
     @NotNull
-    @Column(name = "salario")
-    private BigDecimal salary;
+    private Double mediaSalarial;
 
 
-    public User(RequestUser data){
-        this.name= data.name();
-        this.salary=data.salary();
-    }
 }
