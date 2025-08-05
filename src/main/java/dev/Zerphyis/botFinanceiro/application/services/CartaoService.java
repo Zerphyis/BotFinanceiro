@@ -52,6 +52,11 @@ public class CartaoService {
                 .collect(Collectors.toList());
     }
 
+    public ResponseCartao buscarPorId(Long id) {
+        Cartao c = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cartão não encontrado"));
+        return mapToResponse(c);
+    }
 
 
     private ResponseCartao mapToResponse(Cartao c) {
