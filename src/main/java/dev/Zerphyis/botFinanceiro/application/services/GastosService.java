@@ -1,5 +1,6 @@
 package dev.Zerphyis.botFinanceiro.application.services;
 
+import dev.Zerphyis.botFinanceiro.infra.exceptions.ResourceNotFoundException;
 import dev.Zerphyis.botFinanceiro.model.gastos.Gastos;
 import dev.Zerphyis.botFinanceiro.model.gastos.RequestGastos;
 import dev.Zerphyis.botFinanceiro.model.gastos.ResponseGastos;
@@ -8,6 +9,9 @@ import dev.Zerphyis.botFinanceiro.model.repositorys.UsuarioRepository;
 import dev.Zerphyis.botFinanceiro.model.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GastosService {
@@ -35,6 +39,17 @@ public class GastosService {
                 salvo.getValor(),
                 salvo.getDataHora(),
                 salvo.getUsuario().getNome()
+        );
+    }
+
+
+    private ResponseGastos mapToResponse(Gastos gasto) {
+        return new ResponseGastos(
+                gasto.getNome(),
+                gasto.getCategoria(),
+                gasto.getValor(),
+                gasto.getDataHora(),
+                gasto.getUsuario().getNome()
         );
     }
 }
