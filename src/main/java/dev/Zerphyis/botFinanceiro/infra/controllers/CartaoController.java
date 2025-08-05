@@ -1,4 +1,4 @@
-package dev.Zerphyis.botFinanceiro.infra;
+package dev.Zerphyis.botFinanceiro.infra.controllers;
 
 import dev.Zerphyis.botFinanceiro.application.services.CartaoService;
 import dev.Zerphyis.botFinanceiro.model.cartao.RequestCartao;
