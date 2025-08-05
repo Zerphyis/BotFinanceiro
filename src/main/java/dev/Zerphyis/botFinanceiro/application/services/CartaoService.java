@@ -1,5 +1,6 @@
 package dev.Zerphyis.botFinanceiro.application.services;
 
+import dev.Zerphyis.botFinanceiro.infra.exceptions.ResourceNotFoundException;
 import dev.Zerphyis.botFinanceiro.model.cartao.Cartao;
 import dev.Zerphyis.botFinanceiro.model.cartao.RequestCartao;
 import dev.Zerphyis.botFinanceiro.model.cartao.ResponseCartao;
@@ -8,6 +9,9 @@ import dev.Zerphyis.botFinanceiro.model.repositorys.UsuarioRepository;
 import dev.Zerphyis.botFinanceiro.model.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartaoService {
@@ -40,4 +44,25 @@ public class CartaoService {
                 salvo.getUsuario().getNome()
         );
     }
+
+    public List<ResponseCartao> listarTodos() {
+        List<Cartao> lista = repo.findAll();
+        return lista.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
+    private ResponseCartao mapToResponse(Cartao c) {
+        return new ResponseCartao(
+                c.getNomeCartao(),
+                c.getLimite(),
+                c.getPortadorAtual(),
+                c.getDataInicio(),
+                c.getDataFim(),
+                c.getUsuario().getNome()
+        );
+    }
+
 }
