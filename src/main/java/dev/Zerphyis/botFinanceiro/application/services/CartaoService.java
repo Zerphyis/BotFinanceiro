@@ -58,6 +58,30 @@ public class CartaoService {
         return mapToResponse(c);
     }
 
+    public ResponseCartao atualizar(Long id, RequestCartao dto) {
+        Cartao c = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cartão não encontrado"));
+
+        Usuario usuario = usuarioRepo.findById(dto.usuarioId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        c.setNomeCartao(dto.nomeCartao());
+        c.setLimite(dto.limite());
+        c.setPortadorAtual(dto.portadorAtual());
+        c.setDataInicio(dto.dataInicio());
+        c.setDataFim(dto.dataFim());
+        c.setUsuario(usuario);
+
+        Cartao atualizado = repo.save(c);
+
+        return mapToResponse(atualizado);
+    }
+
+    public void deletar(Long id) {
+        Cartao c = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cartão não encontrado"));
+        repo.delete(c);
+    }
 
     private ResponseCartao mapToResponse(Cartao c) {
         return new ResponseCartao(
