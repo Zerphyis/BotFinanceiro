@@ -42,6 +42,13 @@ public class GastosService {
         );
     }
 
+    public List<ResponseGastos> listarTodos() {
+        List<Gastos> lista = gastoRepo.findAll();
+        return lista.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
 
     private ResponseGastos mapToResponse(Gastos gasto) {
         return new ResponseGastos(
