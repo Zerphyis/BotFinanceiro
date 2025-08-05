@@ -49,6 +49,13 @@ public class GastosService {
                 .collect(Collectors.toList());
     }
 
+    public ResponseGastos buscarPorId(Long id) {
+        Gastos gasto = gastoRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
+        return mapToResponse(gasto);
+    }
+
+
 
     private ResponseGastos mapToResponse(Gastos gasto) {
         return new ResponseGastos(
