@@ -55,7 +55,29 @@ public class GastosService {
         return mapToResponse(gasto);
     }
 
+    public ResponseGastos atualizar(Long id, RequestGastos dto) {
+        Gastos gasto = gastoRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
 
+        Usuario usuario = usuarioRepo.findById(dto.usuarioId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+        gasto.setNome(dto.nome());
+        gasto.setCategoria(dto.categoria());
+        gasto.setValor(dto.valor());
+        gasto.setDataHora(dto.dataHora());
+        gasto.setUsuario(usuario);
+
+        Gastos atualizado = gastoRepo.save(gasto);
+
+        return mapToResponse(atualizado);
+    }
+
+    public void deletar(Long id) {
+        Gastos gasto = gastoRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Gasto não encontrado"));
+        gastoRepo.delete(gasto);
+    }
 
     private ResponseGastos mapToResponse(Gastos gasto) {
         return new ResponseGastos(
