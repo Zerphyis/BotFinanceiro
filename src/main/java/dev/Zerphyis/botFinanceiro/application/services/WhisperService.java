@@ -1,39 +1,41 @@
 package dev.Zerphyis.botFinanceiro.application.services;
 
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ContentType;
-import org.springframework.beans.factory.annotation.Value;
+import dev.Zerphyis.botFinanceiro.infra.exceptions.TranscricaoException;
 import org.springframework.stereotype.Service;
+import org.vosk.Model;
+import org.vosk.Recognizer;
 
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 @Service
 public class WhisperService {
-    @Value("${openai.api.key}")
-    private String openaiApiKey;
 
-    public String transcrever(File audioFile) throws IOException {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost request = new HttpPost("https://api.openai.com/v1/audio/transcriptions");
+    public String transcrever(File audioFile){
+        try (Model model = new Model("models/pt-br")) {
+            try (AudioInputStream ais = AudioSystem.getAudioInputStream(audioFile)) {
+                AudioFormat format = ais.getFormat();
 
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.addBinaryBody("file", audioFile, ContentType.DEFAULT_BINARY, audioFile.getName());
-            builder.addTextBody("model", "whisper-1");
-            builder.setCharset(StandardCharsets.UTF_8);
+                if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+                    throw new TranscricaoException("Formato de áudio inválido. Use WAV PCM 16-bit mono.");
+                }
 
-            request.setHeader("Authorization", "Bearer " + openaiApiKey);
-            request.setEntity(builder.build());
+                Recognizer recognizer = new Recognizer(model, format.getSampleRate());
+                byte[] buffer = new byte[4096];
+                int bytesRead;
 
-            return httpClient.execute(request, response -> {
-                Scanner scanner = new Scanner(response.getEntity().getContent()).useDelimiter("\\A");
-                return scanner.hasNext() ? scanner.next() : "";
-            });
+                while ((bytesRead = ais.read(buffer)) >= 0 && recognizer.acceptWaveForm(buffer, bytesRead)) {
+                }
+
+                return recognizer.getFinalResult();
+
+            } catch (UnsupportedAudioFileException | IOException e) {
+                throw new TranscricaoException("Erro ao ler o arquivo de áudio", e);
+            }
+        } catch (IOException e) {
+            throw new TranscricaoException("Erro ao carregar o modelo de transcrição", e);
         }
     }
 }
+
